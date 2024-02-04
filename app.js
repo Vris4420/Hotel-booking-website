@@ -1,17 +1,16 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js")
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const { listingSchema, reviewSchema } = require("./schema.js")             // required schema JOI for server side validarion
-const Review = require("./models/review.js")
 
-// router required for listing
+
+// router required for listings
 const listings = require("./routes/listing.js");
+// router required for reviews
+const reviews = require("./routes/review.js");
 
 
 
@@ -34,42 +33,12 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 
 
-// Method for validate review using JOI (server side)
-const validateReview = (req,res,next) => {
-    let {error} = reviewSchema.validate(req.body);
-    if(error){
-        let errMsg = error.details.map((el)=> el.message).join(",");
-        throw new ExpressError(400,result.error);
-    } else {
-        next();
-    }
-};
+
 
 app.use("/listings", listings)
+app.use("/listings/:id/reviews", reviews);
 
 
-//Reviews 
-//POST review Route
-app.post("/listings/:id/reviews", validateReview, wrapAsync(async(req,res) => {
-    let listing = await Listing.findById(req.params.id);
-    let newReview = new Review(req.body.review);
-
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-
-    res.redirect(`/listings/${listing._id}`);
-}));
-
-//Delete Review route
-app.delete(("/listings/:id/reviews/:reviewId"),wrapAsync(async(req,res) =>{
-    let {id, reviewId} = req.params;
-    await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});   // take out(pull) reviewId from reviews for that id
-    await Review.findByIdAndDelete(reviewId);  // as this line execute, review get deletes
-
-    res.redirect(`/listings/${id}`)
-}));
 
 
 
