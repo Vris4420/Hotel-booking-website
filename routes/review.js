@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router({mergeParams: true});   // mergeParams is for post review route , for recieving id of listing from app.use reviews
+const router = express.Router({mergeParams: true});  // creates new router obj // mergeParams is for post review route , for recieving id of listing from app.use reviews
 
 const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");

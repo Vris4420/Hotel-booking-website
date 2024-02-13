@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router();             // creating new router object
 
 const wrapAsync = require("../utils/wrapAsync.js");
 const { listingSchema, reviewSchema } = require("../schema.js")             // required schema JOI for server side validarion
@@ -43,9 +43,9 @@ router.post("/",validateListing, wrapAsync(async (req,res,next) => {
    // let {title, description, image, price, country, location} = req.body;
    // let listing = req.body.listing;
 
-//    if(!req.body.listing) {
-//     throw new ExpressError(400, "Send valid data for listing");
-//    }
+    //    if(!req.body.listing) {
+    //     throw new ExpressError(400, "Send valid data for listing");
+    //    }
     
     const newListing = new Listing(req.body.listing);
     await newListing.save();
