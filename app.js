@@ -6,6 +6,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session");
+const flash = require("connect-flash");
 
 
 // router required for listings
@@ -44,9 +45,19 @@ const sessionOptions = {
     }
 };
 
+app.get("/", (req,res) => {
+    res.send("root");
+});
+
+// expression-session
 app.use(session(sessionOptions));
+//connect-flash
+app.use(flash())
 
-
+app.use((req,res,next) => {
+    res.locals.success = req.flash("success");
+    next();
+})
 
 // middlewares for routes folder
 app.use("/listings", listings)
@@ -87,9 +98,6 @@ app.use((err, req, res, next) => {
     //res.status(statusCode).send(message);
 });
 
-app.get("/", (req,res) => {
-    res.send("root");
-});
 app.listen(3000, () => {
     console.log("server is listening on port 8080")
 });
