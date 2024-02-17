@@ -7,12 +7,18 @@ const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js")
+
 
 
 // router required for listings
-const listings = require("./routes/listing.js");
+const listingsRouter = require("./routes/listing.js");
 // router required for reviews
-const reviews = require("./routes/review.js");
+const reviewsRouter = require("./routes/review.js");
+// router requird for user
+const userRouter = require("./routes/user.js");
 
 
 
@@ -51,6 +57,14 @@ app.get("/", (req,res) => {
 
 // expression-session
 app.use(session(sessionOptions));
+
+//passport
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 //connect-flash
 app.use(flash())
 app.use((req,res,next) => {
@@ -59,33 +73,22 @@ app.use((req,res,next) => {
     next();
 })
 
+app.get("/demouser", async(req,res) => {
+    let fakeUser = new User({
+        email: "stu@gmail.com",
+        username: "bas"
+    });
+
+    let registeredUser = await User.register(fakeUser, "helloworld");
+    res.send(registeredUser);
+})
+
 // middlewares for routes folder
-app.use("/listings", listings)
-app.use("/listings/:id/reviews", reviews);
+app.use("/listings", listingsRouter)
+app.use("/listings/:id/reviews", reviewsRouter);
+app.use("/", userRouter);
 
 
-
-
-
-
-// app.get("/testListing", (req,res) => {
-//     let sampleListing = new Listing({
-//         title: "My New Villa",
-//         description: "By the beach",
-//         price: 1200,
-//         location: "Calangute, Goa",
-//         country: "India",
-//     });
-
-//     sampleListing.save().then((res) => {
-//         console.log(res);
-//     }).catch((err) => {
-//         console.log(err);
-//     });
-
-//     console.log("Sample was saved");
-//     res.send("successful testing");
-// });
 
 app.all("*", (req,res,next) => {
     next(new ExpressError(404, "Page not found"));
