@@ -37,7 +37,7 @@ router.get("/new",isLoggedIn, (req,res) => {
 //Show Route
 router.get("/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
-    const listing = await Listing.findById(id).populate("reviews");   // populate for showing data on screen for review tab
+    const listing = await Listing.findById(id).populate("reviews").populate("owner");   // populate for showing data of particular listing on screen for review tab and owner
     if(!listing){
         req.flash("error", "Listing you requested for does not exist! ")
         res.redirect("/listings");
@@ -49,6 +49,7 @@ router.get("/:id", wrapAsync(async (req,res) => {
 router.post("/",isLoggedIn,validateListing, wrapAsync(async (req,res,next) => {
     
     const newListing = new Listing(req.body.listing);
+    newListing.owner = req.user._id; // id of current user stored by passport
     await newListing.save();
     req.flash("success", "New Listing Created");
     res.redirect("/listings");
