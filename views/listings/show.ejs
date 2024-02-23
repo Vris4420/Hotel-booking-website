@@ -46,7 +46,7 @@
 
 
          <!-- if condition for authorization matching user to owner -->
-        <% if(currUser && currUser._id.equals(listing.owner._id) ){%>
+        <!-- < % if(currUser && currUser._id.equals(listing.owner._id) ){%> -->
         <h4>Leave a review</h4>
         <form action="/listings/<%=listing.id%>/reviews" method="POST" novalidate class="needs-validation">
             <div class="mb-3 mt-3">
@@ -74,7 +74,7 @@
             <button class="btn btn-outline-dark">Submit</button>
         </form>
         <hr/>
-        <% } %>
+        <!-- < % } %> -->
 
 
         <p>All Reviews</p>
