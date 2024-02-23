@@ -2,21 +2,10 @@ const express = require("express");
 const router = express.Router({mergeParams: true});  // creates new router obj // mergeParams is for post review route , for recieving id of listing from app.use reviews
 
 const wrapAsync = require("../utils/wrapAsync.js");
-const ExpressError = require("../utils/ExpressError.js");
-const { reviewSchema } = require("../schema.js")             // required schema JOI for server side validarion
 const Review = require("../models/review.js");
-const Listing = require("../models/listing.js")
+const Listing = require("../models/listing.js");
+const {validateReview} = require("../middleware.js");
 
-// Method for validate review using JOI (server side)
-const validateReview = (req,res,next) => {
-    let {error} = reviewSchema.validate(req.body);
-    if(error){
-        let errMsg = error.details.map((el)=> el.message).join(",");
-        throw new ExpressError(400,result.error);
-    } else {
-        next();
-    }
-};
 
 //Reviews 
 //POST review Route
