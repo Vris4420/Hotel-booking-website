@@ -7,6 +7,12 @@ const listingController = require("../controllers/listing.js")
 // multer
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
+//dotenv
+if(process.env.NODE_ENV != "production"){
+    const dotenv = require("dotenv");
+    dotenv.config();
+}
+
 
 router
     .route("/")
@@ -24,7 +30,7 @@ router.get("/new",isLoggedIn,listingController.renderNewForm);
 router
     .route("/:id")
         .get( wrapAsync(listingController.showListing)) //Show Route
-        .put(isLoggedIn, isOwner ,validateListing, wrapAsync(listingController.updateListing))  //Update Route
+        .put(isLoggedIn, isOwner,upload.single('listing[image]') ,validateListing, wrapAsync(listingController.updateListing))  //Update Route
         .delete(isLoggedIn, isOwner ,wrapAsync(listingController.destroyListing));  //Delete Route
 
 
